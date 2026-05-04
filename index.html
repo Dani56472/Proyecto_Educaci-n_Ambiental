@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad Activa | Reportes Campeche</title>
+    <link rel="icon" type="image/png" href="RSC_Logo_Final.png">
+    <style>
+        :root {
+            --primary-color: #2e7d32; /* Verde naturaleza */
+            --secondary-color: #fbc02d; /* Amarillo alerta */
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav {
+            background-color: #1b5e20;
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background-color: var(--secondary-color);
+            color: #000;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        /* Estilos del Formulario */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        /* Directorio y Donaciones */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            border: 11px solid #eee;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #444;
+        }
+
+        .btn-donar {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: #333;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        footer {
+            background-color: var(--text-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Red Socioambiental Campeche</h1>
+        <p>Identifica, reporta y mejora tu ciudad</p>
+    </header>
+
+    <nav>
+        <a href="#reportar">Hacer un Reporte</a>
+        <a href="#directorio">Directorio</a>
+    </nav>
+
+    <div class="container">
+        <section id="reportar">
+            <h2>Crear un Nuevo Reporte</h2>
+            <p>Utiliza este formulario para notificar a las autoridades o agrupaciones correspondientes. Hemos preparado descripciones rápidas para agilizar tu reporte.</p>
+            
+            <form action="https://formsubmit.co/danadrichk@gmail.com" method="POST">
+<input type="hidden" name="_captcha" value="false">
+<input type="hidden">
+                <div class="form-group">
+                    <label for="tipo_problema">Tipo de Problemática:</label>
+                    <select id="tipo_problema" name="tipo_problema" onchange="actualizarComentario()" required>
+                        <option value="">-- Selecciona una opción --</option>
+                        <option value="perritos">Perritos callejeros en situación de riesgo</option>
+                        <option value="baches">Baches o infraestructura vial dañada</option>
+                        <option value="basura">Acumulación de basura / Focos de infección</option>
+                        <option value="otros">Otra problemática (Especificar)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ubicacion">Ubicación exacta (Calle, Colonia, Referencias):</label>
+                    <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej. Barrio de San Román, cerca del Malecón..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción / Comentarios:</label>
+                    <textarea id="descripcion" name="descripcion" rows="4" placeholder="Selecciona un problema arriba para usar una plantilla rápida, o escribe tu propio reporte..."></textarea>
+                </div>
+
+                <button type="submit">Enviar Reporte a la Plataforma</button>
+            </form>
+        </section>
+
+        <section id="directorio">
+            <h2>Directorio de Instituciones</h2>
+            <div class="grid-cards">
+                <div class="card">
+                    <h3>Ayuntamiento de Campeche</h3>
+                    <p><strong>Atiende:</strong> Baches y servicios públicos.</p>
+                    <p><strong>Teléfono:</strong> 981 127 3900 </p>
+                    <p><strong>Horario:</strong> Lun - Vie, 8:00 AM a 4:00 PM</p>
+                    <p><strong>Sitio web:</strong><br><a href="https://www.municipiocampeche.gob.mx/bacheo/" title= "H. Ayuntamiento de Campeche" target="_blank">H. Ayuntamiento de Campeche</a></p>
+                </div>
+                <div class="card">
+                    <h3>Pro Animal Campeche, A.C.</h3>
+                    <p><strong>Atiende:</strong> Rescate, refugio y adopción de perritos y fauna callejera.</p>
+                     <p><strong>Teléfono: </strong>981 816 5468</p>
+                    <p><strong>Correo:</strong><br><a href="mailto:info@proanimalcampeche.org">info@proanimalcampeche.org</a></p>
+                    <p><strong>Redes:</strong><a href="https://www.instagram.com/adoptare?igshid=1lqlj3hkifdgs" title= "Adoptare" target="_blank">@Adoptare</a></p>
+                </div>
+                <div class="card">
+                    <h3>Secretaría de Medio Ambiente, Biodiversidad, Cambio Climático y Energía (SEMABICE)</h3>
+                    <p><strong>Atiende:</strong> Denuncias por contaminación grave y daños al ecosistema.</p>
+                    <p><strong>Teléfono:</strong> 981 811 9730</p>
+                    <p><strong>Sitio web:</strong><br><a href="https://www.semabicce.campeche.gob.mx/" title= "Secretaría de Medio Ambiente, Biodiversidad, Cambio Climático y Energía" target="_blank">Secretaría de Medio Ambiente, Biodiversidad, Cambio Climático y Energía</a></p>
+                    <p><strong>Correo:</strong><br><a href="mailto:contacto.semabicce@campeche.gob.mx">contacto.semabicce@campeche.<br>gob.mx</a></p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Red Socioambiental Campeche. Desarrollado por el equipo: Daniel, Dony, Anthony y Justo.</p>
+    </footer>
+
+    <script>
+        function actualizarComentario() {
+            const tipo = document.getElementById("tipo_problema").value;
+            const textarea = document.getElementById("descripcion");
+            
+            if (tipo === "perritos") {
+                textarea.value = "He avistado un perrito callejero/manada en la ubicación mencionada. Parece necesitar asistencia (agua/comida) o presenta riesgo para los transeúntes. Solicito la intervención de rescate animal.";
+            } else if (tipo === "baches") {
+                textarea.value = "Reporto un bache o hundimiento considerable en la vía pública que representa un riesgo para los vehículos y peatones. Solicito su pronta reparación.";
+            } else if (tipo === "basura") {
+                textarea.value = "Reporto un área con acumulación inusual de basura que está generando mal olor y podría convertirse en un foco de infección. Solicito apoyo de servicios públicos.";
+            } else if (tipo === "otros") {
+                textarea.value = "";
+                textarea.placeholder = "Por favor, describe detalladamente la problemática...";
+            }
+        }
+    </script>
+
+</body>
+</html>
