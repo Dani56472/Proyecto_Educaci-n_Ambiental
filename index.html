@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- 1. El diseño del mapa (CSS) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- 2. El cerebro del mapa (JavaScript de la librería) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comunidad Activa | Reportes Campeche</title>
     <link rel="icon" type="image/png" href="RSC_Logo_Final.png">
     <style>
+        #mapa-interactivo {
+    height: 300px;    /* Si no pones altura, el mapa es invisible */
+    width: 100%;      /* Que use todo el ancho disponible */
+    margin-top: 10px;
+    border: 2px solid #2e7d32; /* Un borde verde para que combine con tu red */
+    border-radius: 8px;
+    z-index: 1;       /* Para que no se encime con el menú transparente */
+}
         :root {
             --primary-color: #2e7d32; /* Verde naturaleza */
             --secondary-color: #fbc02d; /* Amarillo alerta */
@@ -207,20 +220,26 @@
 <input type="hidden" name="_captcha" value="false">
 <input type="hidden" name="_next" value="https://dani56472.github.io/Proyecto_Educaci-n_Ambiental/Gracias.html">
                 <div class="form-group">
-                    <label for="tipo_problema">Tipo de Problemática:</label>
-                    <select id="tipo_problema" name="tipo_problema" onchange="actualizarComentario()" required>
+                    <label for="problema">Tipo de Problemática:</label>
+                    <select id="problema" name="problema" onchange="actualizarComentario()" required>
                         <option value="">-- Selecciona una opción --</option>
-                        <option value="perritos">Perritos callejeros en situación de riesgo</option>
+                        <option value="perritos callejeros">Perritos callejeros en situación de riesgo</option>
                         <option value="baches">Baches o infraestructura vial dañada</option>
                         <option value="basura">Acumulación de basura / Focos de infección</option>
                         <option value="otros">Otra problemática (Especificar)</option>
                     </select>
                 </div>
+                <div class="form-group">
+                <label for="nombre_reporta">Nombre de quien reporta:</label>
+                 <input type="text" id="nombre_reporta" name="nombre" placeholder="Tu nombre completo" required>
+                </div>
 
                 <div class="form-group">
-                    <label for="ubicacion">Ubicación exacta (Calle, Colonia, Referencias) y nombre de quien reporta:</label>
-                    <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej. Fulano: Barrio de San Román, cerca del Malecón..." required>
+                    <label for="ubicacion">Ubicación exacta (Calle, Colonia, Referencias) o selecciona tu ubicación en el mapa:</label>
+                    <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej.Barrio de San Román, cerca del Malecón..." required>
                 </div>
+                <div id="mapa-interactivo"></div>
+                
 
                 <div class="form-group">
                     <label for="descripcion">Descripción / Comentarios:</label>
@@ -265,10 +284,10 @@
 
     <script>
         function actualizarComentario() {
-            const tipo = document.getElementById("tipo_problema").value;
+            const tipo = document.getElementById("problema").value;
             const textarea = document.getElementById("descripcion");
             
-            if (tipo === "perritos") {
+            if (tipo === "perritos callejeros") {
                 textarea.value = "He avistado un perrito callejero/manada en la ubicación mencionada. Parece necesitar asistencia (agua/comida) o presenta riesgo para los transeúntes. Solicito la intervención de rescate animal.";
             } else if (tipo === "baches") {
                 textarea.value = "Reporto un bache o hundimiento considerable en la vía pública que representa un riesgo para los vehículos y peatones. Solicito su pronta reparación.";
@@ -280,6 +299,41 @@
             }
         }
     </script>
+<script>
+    // A. CREAR EL OBJETO MAPA
+    // Buscamos el div con id "mapa-interactivo" y le decimos que empiece en Campeche.
+    // [19.8439, -90.5349] son Latitud y Longitud. 13 es el nivel de zoom.
+    var map = L.map('mapa-interactivo').setView([19.8439, -90.5349], 13);
 
+    // B. PONER EL DIBUJO DEL MAPA (Las piezas del rompecabezas)
+    // El mapa no es una sola imagen, son miles de cuadritos que se bajan de internet.
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    // C. CREAR UNA VARIABLE PARA EL "PIN"
+    var marcador;
+
+    // D. ESCUCHAR CUANDO EL USUARIO HACE CLIC
+    map.on('click', function(detallesDelClic) {
+        
+        // Obtenemos las coordenadas de donde se hizo el clic
+        var coordenadas = detallesDelClic.latlng;
+
+        // Si ya pusimos un marcador antes, lo quitamos para poner el nuevo (así solo hay uno)
+        if (marcador) {
+            map.removeLayer(marcador);
+        }
+
+        // Creamos el marcador en esas coordenadas y lo añadimos al mapa
+        marcador = L.marker(coordenadas).addTo(map);
+
+        // E. ESCRIBIR EN EL CUADRO DE TEXTO
+        // Buscamos tu input por su ID 'ubicacion' y le pasamos los datos.
+        // .toFixed(6) es para que no salgan 20 números decimales.
+        document.getElementById('ubicacion').value = 
+            "Lat: " + coordenadas.lat.toFixed(6) + ", Lon: " + coordenadas.lng.toFixed(6);
+    });
+</script>
 </body>
 </html>
