@@ -11,6 +11,49 @@
     <title>Comunidad Activa | Reportes Campeche</title>
     <link rel="icon" type="image/png" href="RSC_Logo_Final.png">
     <style>
+        input[type="file"] {
+    border: 2px dashed var(--primary-color);
+    padding: 15px;
+    width: 100%;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.galeria-previa {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.foto-contenedor {
+    position: relative; /* Clave para que la X se pegue a la foto */
+    width: 100px;
+}
+
+.foto-contenedor img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* Corta la foto para que sea un cuadrado perfecto */
+    border-radius: 8px;
+    border: 2px solid var(--primary-color);
+}
+
+.btn-eliminar {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4444;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
         #mapa-interactivo {
     height: 300px;    /* Si no pones altura, el mapa es invisible */
     width: 100%;      /* Que use todo el ancho disponible */
@@ -216,7 +259,7 @@
             <h2>Crear un Nuevo Reporte</h2>
             <p>Utiliza este formulario para notificar a las autoridades o agrupaciones correspondientes. Hemos preparado descripciones rápidas para agilizar tu reporte.</p>
             
-            <form action="https://formsubmit.co/danadrichk@gmail.com" method="POST">
+            <form action="https://formsubmit.co/danadrichk@gmail.com" method="POST" enctype="multipart/form-data">
 <input type="hidden" name="_captcha" value="false">
 <input type="hidden" name="_next" value="https://dani56472.github.io/Proyecto_Educaci-n_Ambiental/Gracias.html">
                 <div class="form-group">
@@ -245,6 +288,12 @@
                     <label for="descripcion">Descripción / Comentarios:</label>
                     <textarea id="descripcion" name="descripcion" rows="4" placeholder="Selecciona un problema arriba para usar una plantilla rápida, o escribe tu propio reporte..."></textarea>
                 </div>
+                
+                <div class="form-group">
+    <label for="foto_evidencia">Subir evidencia fotográfica:</label>
+    <input type="file" id="foto_evidencia" name="archivo[]" accept="image/*" multiple>
+    <div id="contenedor-galeria" class="galeria-previa"></div>
+</div>
 
                 <button type="submit">Enviar Reporte a la Plataforma</button>
             </form>
@@ -334,6 +383,71 @@
         document.getElementById('ubicacion').value = 
             "Lat: " + coordenadas.lat.toFixed(6) + ", Lon: " + coordenadas.lng.toFixed(6);
     });
+   // 1. VARIABLES GLOBALES (La memoria de nuestra oficina)
+    let archivosParaEnviar = []; 
+    const inputArchivo = document.getElementById('foto_evidencia');
+    const galeria = document.getElementById('contenedor-galeria');
+
+    // 2. ESCUCHAR EL CAMBIO (Cuando el usuario elige fotos)
+    inputArchivo.addEventListener('change', function() {
+        const nuevosArchivos = Array.from(this.files);
+        
+        // Sumamos las fotos nuevas a las que ya teníamos
+        archivosParaEnviar = archivosParaEnviar.concat(nuevosArchivos);
+        
+        // Ejecutamos las funciones de actualización
+        renderizarGaleria();
+        actualizarInputOriginal();
+    });
+
+    // 3. FUNCIÓN PARA DIBUJAR LAS FOTOS EN PANTALLA
+    function renderizarGaleria() {
+        galeria.innerHTML = ""; // Limpiamos la pantalla para redibujar todo
+
+        archivosParaEnviar.forEach((archivo, indice) => {
+            const lector = new FileReader();
+
+            lector.onload = function(e) {
+                // Fabricamos el contenedor de la foto
+                const div = document.createElement('div');
+                div.classList.add('foto-contenedor');
+                
+                // Le metemos la imagen y el botón con la función de eliminar
+                // Usamos el 'indice' para saber exactamente cuál borrar después
+                div.innerHTML = `
+                    <img src="${e.target.result}">
+                    <div class="btn-eliminar" onclick="eliminarFoto(${indice})">×</div>
+                `;
+                
+                galeria.appendChild(div);
+            }
+            lector.readAsDataURL(archivo);
+        });
+    }
+
+    // 4. FUNCIÓN PARA BORRAR (De la pantalla y de la memoria)
+    function eliminarFoto(indice) {
+        // Quitamos 1 elemento del arreglo en la posición 'indice'
+        archivosParaEnviar.splice(indice, 1);
+        
+        // Volvemos a sincronizar todo
+        renderizarGaleria();
+        actualizarInputOriginal();
+    }
+
+    // 5. FUNCIÓN DE SINCRONIZACIÓN (El "DataTransfer")
+    function actualizarInputOriginal() {
+        const bandejaTemporal = new DataTransfer();
+        
+        // Copiamos nuestros archivos "sobrevivientes" a la bandeja
+        archivosParaEnviar.forEach(archivo => {
+            bandejaTemporal.items.add(archivo);
+        });
+        
+        // Le pasamos la bandeja limpia al botón original
+        inputArchivo.files = bandejaTemporal.files;
+    }
+    
 </script>
 </body>
 </html>
