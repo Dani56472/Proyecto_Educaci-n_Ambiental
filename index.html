@@ -291,7 +291,7 @@
                 
                 <div class="form-group">
     <label for="foto_evidencia">Subir evidencia fotográfica:</label>
-    <input type="file" id="foto_evidencia" name="attachment" accept="image/*" multiple>
+    <input type="file" id="foto_evidencia" name="attachment" accept="image/*">
     <div id="contenedor-galeria" class="galeria-previa"></div>
 </div>
 
@@ -383,71 +383,48 @@
         document.getElementById('ubicacion').value = 
             "Lat: " + coordenadas.lat.toFixed(6) + ", Lon: " + coordenadas.lng.toFixed(6);
     });
-   // 1. VARIABLES GLOBALES (La memoria de nuestra oficina)
-    let archivosParaEnviar = []; 
+ let archivoParaEnviar = null; 
     const inputArchivo = document.getElementById('foto_evidencia');
     const galeria = document.getElementById('contenedor-galeria');
 
-    // 2. ESCUCHAR EL CAMBIO (Cuando el usuario elige fotos)
+    // 2. ESCUCHAR EL CAMBIO
     inputArchivo.addEventListener('change', function() {
-        const nuevosArchivos = Array.from(this.files);
-        
-        // Sumamos las fotos nuevas a las que ya teníamos
-        archivosParaEnviar = archivosParaEnviar.concat(nuevosArchivos);
-        
-        // Ejecutamos las funciones de actualización
-        renderizarGaleria();
-        actualizarInputOriginal();
+        // Si el usuario seleccionó un archivo, lo guardamos
+        if (this.files.length > 0) {
+            archivoParaEnviar = this.files[0];
+            renderizarGaleria();
+        }
     });
 
-    // 3. FUNCIÓN PARA DIBUJAR LAS FOTOS EN PANTALLA
+    // 3. DIBUJAR LA FOTO
     function renderizarGaleria() {
-        galeria.innerHTML = ""; // Limpiamos la pantalla para redibujar todo
+        galeria.innerHTML = ""; // Limpiamos pantalla
 
-        archivosParaEnviar.forEach((archivo, indice) => {
-            const lector = new FileReader();
+        // Si no hay archivo, detenemos la función aquí
+        if (!archivoParaEnviar) return; 
 
-            lector.onload = function(e) {
-                // Fabricamos el contenedor de la foto
-                const div = document.createElement('div');
-                div.classList.add('foto-contenedor');
-                
-                // Le metemos la imagen y el botón con la función de eliminar
-                // Usamos el 'indice' para saber exactamente cuál borrar después
-                div.innerHTML = `
-                    <img src="${e.target.result}">
-                    <div class="btn-eliminar" onclick="eliminarFoto(${indice})">×</div>
-                `;
-                
-                galeria.appendChild(div);
-            }
-            lector.readAsDataURL(archivo);
-        });
+        const lector = new FileReader();
+
+        lector.onload = function(e) {
+            const div = document.createElement('div');
+            div.classList.add('foto-contenedor');
+            
+            div.innerHTML = `
+                <img src="${e.target.result}">
+                <div class="btn-eliminar" onclick="eliminarFoto()">×</div>
+            `;
+            
+            galeria.appendChild(div);
+        }
+        lector.readAsDataURL(archivoParaEnviar);
     }
 
-    // 4. FUNCIÓN PARA BORRAR (De la pantalla y de la memoria)
-    function eliminarFoto(indice) {
-        // Quitamos 1 elemento del arreglo en la posición 'indice'
-        archivosParaEnviar.splice(indice, 1);
-        
-        // Volvemos a sincronizar todo
-        renderizarGaleria();
-        actualizarInputOriginal();
+    // 4. BORRAR FOTO Y MEMORIA
+    function eliminarFoto() {
+        archivoParaEnviar = null; // Borramos nuestra memoria
+        inputArchivo.value = "";  // Vaciamos el botón original (el const) directamente
+        renderizarGaleria();      // Redibujamos la pantalla (quedará vacía)
     }
-
-    // 5. FUNCIÓN DE SINCRONIZACIÓN (El "DataTransfer")
-    function actualizarInputOriginal() {
-        const bandejaTemporal = new DataTransfer();
-        
-        // Copiamos nuestros archivos "sobrevivientes" a la bandeja
-        archivosParaEnviar.forEach(archivo => {
-            bandejaTemporal.items.add(archivo);
-        });
-        
-        // Le pasamos la bandeja limpia al botón original
-        inputArchivo.files = bandejaTemporal.files;
-    }
-    
 </script>
 </body>
 </html>
